@@ -11,16 +11,17 @@ int M2_DEFAULT_SPEED=130;
 int rightMaxSpeed=200;
 int leftMaxSpeed=200;
 int lastError;
+int line2old;
 
 int calibrationCheck=0;
 int DEBUG = digitalRead(D3);//D3 random port for now, need to write debugging code
 
 
-const int num_sensors=8; 		//number of sensors we're using - CHANGE if not using all 8
+const int num_sensors=6; 		//number of sensors we're using - CHANGE if not using all 8
 int emit_pin=D2; 		//set emit pin to D2 for now - can change to open pin later
 int Timeout=10000; 		//10 second time out for setting up the sensors
 
-QTRSensorsA qtra((unsigned char[]) {8,7,6,5,4,3,2,1}, num_sensors, Timeout, emit_pin);    // define pin# later when I know which ones are free - prolly wont need all 8
+QTRSensorsAnalog qtra((unsigned char[]) {8,7,6,5,4,3,2,1}, num_sensors, Timeout, emit_pin);    // define pin# later when I know which ones are free - prolly wont need all 8
 unsigned int sensorValues[num_sensors]; 													//array of the number of sensors
 
 //positioning
@@ -38,7 +39,7 @@ int line7=sensorValues[7];
 int line8=sensorValues[8];
 
 void setup() {
-pinMode(D2, INPUT);
+pinMode(emit_pin, INPUT);
 pinMode(D0, OUTPUT);
 
 //calibrate on setup
@@ -56,7 +57,17 @@ int motorSpeed = KD * error + KP * (error - lastError);
 lastError = error;
 
 
-	motorSpeedLimit(motorSpeed);
+motorSpeedLimit(motorSpeed);
+
+//TESTING QTR
+
+if(line2==line2old)
+    digitalWrite(D0, HIGH);
+else
+    digitalWrite(D0, LOW);
+
+
+line2old=line2;
     
 //CALIBRATION
 do {
@@ -70,6 +81,8 @@ calibrationCheck++; // run calibration when debug
 }
 }
 
+
+
 void calibration() {
 for (int i=0; i<400;i++) //400 made up num, can increase to extend calibration time.
 {
@@ -77,10 +90,12 @@ for (int i=0; i<400;i++) //400 made up num, can increase to extend calibration t
 	delay(20); //added delay to ensure calibration finishes
 }
 
-digitalWrite(D0, LOW);//CHANGE D0 TO APPROPRIATE PIN LATER - runs once calibrations is finished - connect to an LED to say its finished.
+digitalWrite(D1, HIGH);//CHANGE D0 TO APPROPRIATE PIN LATER - runs once calibrations is finished - connect to an LED to say its finished.
 calibrationCheck=0;
 lastError=0;
 }
+
+
 
 
 void motorSpeedLimit(int MSpd){
