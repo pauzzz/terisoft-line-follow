@@ -1,11 +1,11 @@
-#include <QTRSensors.h> 	//not inherently in particle libraries... idk if that'll be an issue. upload to src/
-#include <PhoBot.h>			// for motor
+#include "QTRSensors.h" 	//not inherently in particle libraries... idk if that'll be an issue. upload to src/
+#include "PhoBot.h"			// for motor
 #include <string>
 
 PhoBot go=PhoBot(9.0, 6.0);
 
-int KD = 0; 	//experiment from 0-> 1 for good value
-int KP = 0; 	//experiment from 1-> 10 for good value
+int KD = 0.2; 	//experiment from 0-> 1 for good value
+int KP = 5; 	//experiment from 1-> 10 for good value
 int M1_DEFAULT_SPEED=130;
 int M2_DEFAULT_SPEED=130;
 int rightMaxSpeed=200;
@@ -17,15 +17,15 @@ int DEBUG = digitalRead(D3);//D3 random port for now, need to write debugging co
 
 
 const int num_sensors=8; 		//number of sensors we're using - CHANGE if not using all 8
-int emit_pin=D2; 		//set emit pin to D0 for now - can change to open pin later
+int emit_pin=D2; 		//set emit pin to D2 for now - can change to open pin later
 int Timeout=10000; 		//10 second time out for setting up the sensors
 
-QTRSensorsRC qtrrc((unsigned char[]) {8,7,6,5,4,3,2,1}, num_sensors, Timeout, emit_pin);    // define pin# later when I know which ones are free - prolly wont need all 8
+QTRSensorsA qtra((unsigned char[]) {8,7,6,5,4,3,2,1}, num_sensors, Timeout, emit_pin);    // define pin# later when I know which ones are free - prolly wont need all 8
 unsigned int sensorValues[num_sensors]; 													//array of the number of sensors
 
 //positioning
 
-unsigned int position = qtrrc.readLine(sensorValues);
+unsigned int position = qtra.readLine(sensorValues);
 unsigned char k = 0;
 
 int line1=sensorValues[1]; 	//value for sensor 1 and so on... remove if we use less sensors
@@ -73,7 +73,7 @@ calibrationCheck++; // run calibration when debug
 void calibration() {
 for (int i=0; i<400;i++) //400 made up num, can increase to extend calibration time.
 {
-    qtrrc.calibrate(); // reads sensors idk speed or frequency here - not arduino
+    qtra.calibrate(); // reads sensors idk speed or frequency here - not arduino
 	delay(20); //added delay to ensure calibration finishes
 }
 
